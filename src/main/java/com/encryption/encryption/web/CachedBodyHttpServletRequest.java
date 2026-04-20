@@ -1,0 +1,69 @@
+package com.encryption.encryption.web;
+
+import jakarta.servlet.ReadListener;
+import jakarta.servlet.ServletInputStream;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequestWrapper;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+
+public class CachedBodyHttpServletRequest extends HttpServletRequestWrapper {
+
+	private final byte[] bodyBytes;
+	private final String contentType;
+
+	public CachedBodyHttpServletRequest(HttpServletRequest request, byte[] bodyBytes) {
+		super(request);
+		this.bodyBytes = bodyBytes;
+		this.contentType = "application/json";
+	}
+
+	@Override
+	public ServletInputStream getInputStream() {
+		ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bodyBytes);
+		return new ServletInputStream() {
+			@Override
+			public int read() {
+				return byteArrayInputStream.read();
+			}
+
+			@Override
+			public boolean isFinished() {
+				return byteArrayInputStream.available() == 0;
+			}
+
+			@Override
+			public boolean isReady() {
+				return true;
+			}
+
+			@Override
+			public void setReadListener(ReadListener readListener) {
+				// no-op for cached synchronous input
+			}
+		};
+	}
+
+	@Override
+	public BufferedReader getReader() {
+		return new BufferedReader(new InputStreamReader(getInputStream(), StandardCharsets.UTF_8));
+	}
+
+	@Override
+	public int getContentLength() {
+		return bodyBytes.length;
+	}
+
+	@Override
+	public long getContentLengthLong() {
+		return bodyBytes.length;
+	}
+
+	@Override
+	public String getContentType() {
+		return contentType;
+	}
+}

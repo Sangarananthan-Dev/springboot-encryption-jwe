@@ -1,0 +1,26 @@
+spring:
+  application:
+    name: encryption
+  datasource:
+    url: jdbc:postgresql://localhost:5432/encryption
+    username: postgres
+    password: root
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+server:
+  port: 8080
+
+app:
+  encryption:
+    enabled: true
+    client-origin: http://localhost:3000
+    timestamp-skew-seconds: 300
+    nonce-ttl-seconds: 300
+    server-private-key-pem: ${APP_SERVER_PRIVATE_KEY_PEM:}
+    server-public-key-pem: ${APP_SERVER_PUBLIC_KEY_PEM:}
