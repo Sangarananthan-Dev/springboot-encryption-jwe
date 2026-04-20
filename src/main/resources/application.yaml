@@ -2,9 +2,10 @@ spring:
   application:
     name: encryption
   datasource:
-    url: jdbc:postgresql://localhost:5432/encryption
-    username: postgres
-    password: root
+    url: jdbc:postgresql://${PGHOST}:${PGPORT}/${PGDATABASE}
+    username: ${PGUSER}
+    password: ${PGPASSWORD}
+    driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
       ddl-auto: update
@@ -14,7 +15,7 @@ spring:
         format_sql: true
 
 server:
-  port: 8080
+  port: ${PORT:8080}
 
 app:
   encryption:
